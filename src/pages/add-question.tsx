@@ -13,7 +13,7 @@ interface IFormProps {
 
 export const AddQuestion = () => {
 	const history = useHistory();
-	const [addQuestionMutation] = useMutation<
+	const [addQuestionMutation, { loading }] = useMutation<
 		AddQuestionMutation,
 		AddQuestionMutationVariables
 	>(ADD_QUESTION_MUTATION, {
@@ -31,6 +31,10 @@ export const AddQuestion = () => {
 	const onSubmit = () => {
 		if (!isValid) {
 			console.log('잘못된 입력');
+			return;
+		}
+		if (loading) {
+			console.log('로딩중');
 			return;
 		}
 
