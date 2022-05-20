@@ -53,7 +53,7 @@ export const Questions = () => {
 		}
 	};
 	const onClickReset = () => {
-		const ok = window.confirm('Do you reset current process?');
+		const ok = window.confirm('Do you want to reset current process?');
 		if (ok) {
 			init(questions);
 			setIsFinish(false);
@@ -140,6 +140,10 @@ export const Questions = () => {
 				</div>
 			) : (
 				<div className='container'>
+					<div className='flex justify-end'>
+						<Link to='/add-question' className='px-8 btn-lime w-full text-center'>Create New Question &rarr;</Link>
+					</div>
+					<hr className='my-5' />
 					<div className='mb-5 grid grid-cols-2 gap-3'>
 						<button className='px-5 btn-gray' onClick={onClickInitAllQuestions}>
 							All Questions
@@ -188,10 +192,6 @@ export const Questions = () => {
 							<button type='button' className={`btn-gray w-1/3 mr-3 ${questions.length === 0 && 'btn-disable'}`} onClick={onClickReset}>Reset</button>
 							<Button type='button' className={`w-1/3 mr-3 ${(isFinish || questions.length === 0) && 'btn-disable'}`} canClick={!showHint} actionText={'Hint'} onClick={onClickHintButton} />
 							<button type='submit' className={`btn-lime w-1/3 ${(!isValid || isFinish || questions.length === 0) && 'btn-disable'}`}>{!markingResult ? 'Marking' : 'Next'}</button>
-						</div>
-						<hr className='my-5' />
-						<div className='flex justify-end'>
-							<Link to='/add-question' className='px-8 btn-lime w-full text-center'>Create New Question &rarr;</Link>
 						</div>
 					</form>
 				</div>
