@@ -111,6 +111,7 @@ export const Questions = () => {
 	};
 	const onClickInitAllQuestions = () => {
 		reset();
+		setIsFinish(false);
 		init(data?.allQuestions.questions);
 	};
 	const onClickInitLatestQuestions = () => {
@@ -129,6 +130,7 @@ export const Questions = () => {
 		const dateString = new Date(maxDate).toDateString();
 		const latestQuestions = qs.filter(q => new Date(q.createdAt).toString().includes(dateString));
 		reset();
+		setIsFinish(false);
 		init(latestQuestions);
 	};
 
