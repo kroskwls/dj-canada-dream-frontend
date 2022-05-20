@@ -77,7 +77,6 @@ export const Questions = () => {
 		if (inputAnswer === correctAnswer) {
 			console.log('정답입니다.');
 			setMarkingResult(true);
-			setShowHint(true);
 		} else {
 			console.log('오답입니다.');
 			setMarkingResult(false);
@@ -165,20 +164,20 @@ export const Questions = () => {
 						{/* 문제 입/출력창 */}
 						<div className='text-xl select-none'>
 							<h3 className='p-3 w-full'>{questions[current]?.kr}</h3>
-							<h3 className={`p-3 w-full mb-3 ${!showHint && 'text-transparent'}`}>
+							{showHint && <h3 className='p-3 w-full mb-3'>
 								{questions[current]?.en.split('').map((w, i) => (
 									<span
 										key={i}
 										className={showHint ? (watch('answer') && watch('answer')[i] === w ? 'text-gray-900' : 'text-red-500 underline') : ''}
 									>{w}</span>
 								))}
-							</h3>
-							<input
-								type='text'
+							</h3>}
+							<textarea
 								className='input w-full text-xl'
 								placeholder={isFinish || questions.length === 0 ? 'No question' : 'Enter the answer'}
 								{...register('answer', { required: true })}
 								disabled={isFinish || questions.length === 0}
+								style={{ resize: 'none' }}
 							/>
 						</div>
 						<div className='p-3 text-center text-lg font-semibold'>
@@ -190,7 +189,7 @@ export const Questions = () => {
 							{isFinish && <span className='text-green-500'>All questions solved!</span>}
 						</div>
 						{/* 버튼 */}
-						<div className='flex justify-between mt-5'>
+						<div className='flex justify-between'>
 							<button type='button' className={`btn-gray w-1/3 mr-3 ${questions.length === 0 && 'btn-disable'}`} onClick={onClickReset}>Reset</button>
 							<Button type='button' className={`w-1/3 mr-3 ${(isFinish || questions.length === 0) && 'btn-disable'}`} canClick={!showHint} actionText={'Hint'} onClick={onClickHintButton} />
 							<button type='submit' className={`btn-lime w-1/3 ${(!isValid || isFinish || questions.length === 0) && 'btn-disable'}`}>{!markingResult ? 'Marking' : 'Next'}</button>
