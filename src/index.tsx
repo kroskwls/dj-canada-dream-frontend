@@ -1,19 +1,30 @@
+import { ApolloProvider } from '@apollo/client';
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import ReactDOM from 'react-dom';
+import { client } from './apollo';
+import { App } from './App';
+import './styles/tailwind.css';
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+// 해당 import를 사용할 경우 react-router-dom의 Link를 사용하여 페이지를 이동할 때
+// URL은 변경되지만 화면이 갱신되지않는 버그가 있었음.
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+// import ReactDOM from 'react-dom/client';
+// const root = ReactDOM.createRoot(
+// 	document.getElementById('root') as HTMLElement
+// );
+// root.render(
+// 	<React.StrictMode>
+// 		<ApolloProvider client={client}>
+// 			<App />
+// 		</ApolloProvider>
+// 	</React.StrictMode>
+// );
+
+ReactDOM.render(
+	<React.StrictMode>
+		<ApolloProvider client={client}>
+			<App />
+		</ApolloProvider>
+	</React.StrictMode>,
+	document.getElementById('root')
+);
