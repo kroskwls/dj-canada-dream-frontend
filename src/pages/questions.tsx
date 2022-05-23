@@ -145,7 +145,7 @@ export const Questions = () => {
 	};
 	const { speak, voices } = useSpeechSynthesis();
 	const onClickSpeech = () => {
-		const voice = voices.find((v: any) => v.lang === 'en-US' && v.name === 'Google US English');
+		const voice = voices.find((v: any) => v.lang === 'en-US');
 		speak({
 			text: questions[current].en,
 			voice: voice,
