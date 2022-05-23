@@ -145,9 +145,10 @@ export const Questions = () => {
 	};
 	const { speak, voices } = useSpeechSynthesis();
 	const onClickSpeech = () => {
+		const voice = voices.find((v: any) => v.lang === 'en-US' && v.name === 'Google US English');
 		speak({
 			text: questions[current].en,
-			voice: voices[2],
+			voice: voice,
 			rate: 0.9,
 			pitch: 1
 		});
