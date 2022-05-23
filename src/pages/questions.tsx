@@ -7,6 +7,10 @@ import { EDIT_QUESTION_MUTATION } from '../graphql/mutations';
 import { ALL_QUESTIONS_QUERY } from '../graphql/queries';
 import { AllQuestionsQuery, AllQuestionsQuery_allQuestions_questions } from '../__generated__/AllQuestionsQuery';
 import { EditQuestionMutation, EditQuestionMutationVariables } from '../__generated__/EditQuestionMutation';
+// @ts-ignore
+import { useSpeechSynthesis } from 'react-speech-kit';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faVolumeHigh } from '@fortawesome/free-solid-svg-icons';
 
 interface IFormProps {
 	answer: string;
@@ -26,17 +30,18 @@ export const Questions = () => {
 	const [totalCount, setTotalCount] = useState(0);
 	const [markingResult, setMarkingResult] = useState<boolean | null>(null);
 	const [questions, setQuestions] = useState<AllQuestionsQuery_allQuestions_questions[]>([]);
+	const [failQuestions, setFailQuestions] = useState<AllQuestionsQuery_allQuestions_questions[]>([]);
 	const { data, error } = useQuery<AllQuestionsQuery>(ALL_QUESTIONS_QUERY, { fetchPolicy: 'network-only' });
 	const init = (array: any) => {
 		setCurrent(0);
 		setTotalCount(array.length);
 		setQuestions(shuffle(array));
-	};
-	const reset = () => {
+		setIsFinish(false);
 		setMarkingResult(null);
 		setShowHint(false);
 		resetForm();
 		setFail(0);
+		setFailQuestions([]);
 	};
 	useEffect(() => {
 		if (data?.allQuestions.questions
@@ -56,8 +61,6 @@ export const Questions = () => {
 		const ok = window.confirm('Do you want to reset current process?');
 		if (ok) {
 			init(questions);
-			setIsFinish(false);
-			reset();
 		}
 	};
 	const onSubmit = () => {
@@ -74,11 +77,14 @@ export const Questions = () => {
 	const onMarking = () => {
 		const { en: correctAnswer } = questions[current];
 		const { answer: inputAnswer } = getValues();
-		if (inputAnswer === correctAnswer) {
-			console.log('정답입니다.');
+		const input = inputAnswer.toLowerCase().replace(/[.]/g, '');
+		const answer = correctAnswer.toLowerCase().replace(/[.]/g, '');
+		if (input === answer) {
+			// 정답
+			onClickSpeech();
 			setMarkingResult(true);
 		} else {
-			console.log('오답입니다.');
+			// 오답
 			setMarkingResult(false);
 			setFail(cur => cur + 1);
 		}
@@ -103,14 +109,18 @@ export const Questions = () => {
 				}
 			});
 		}
+		if (fail > 0) {
+			setFailQuestions(cur => [...cur, questions[current]]);
+		}
 		// 상태 변수들 초기화
-		reset();
+		setMarkingResult(null);
+		setShowHint(false);
+		resetForm();
+		setFail(0);
 		// 진행 +1
 		setCurrent(cur => cur + 1);
 	};
 	const onClickInitAllQuestions = () => {
-		reset();
-		setIsFinish(false);
 		init(data?.allQuestions.questions);
 	};
 	const onClickInitLatestQuestions = () => {
@@ -128,9 +138,19 @@ export const Questions = () => {
 		}
 		const dateString = new Date(maxDate).toDateString();
 		const latestQuestions = qs.filter(q => new Date(q.createdAt).toString().includes(dateString));
-		reset();
-		setIsFinish(false);
 		init(latestQuestions);
+	};
+	const onClickInitRestryFailQuestions = () => {
+		init(failQuestions);
+	};
+	const { speak, voices } = useSpeechSynthesis();
+	const onClickSpeech = () => {
+		speak({
+			text: questions[current].en,
+			voice: voices[2],
+			rate: 0.9,
+			pitch: 1
+		});
 	};
 
 	return (
@@ -155,39 +175,63 @@ export const Questions = () => {
 					</div>
 					<form className='p-5 border' onSubmit={handleSubmit(onSubmit)}>
 						<h1 className='text-3xl font-semibold mb-5 text-center mt-5'>Question</h1>
-						{/* 상황판 */}
-						<div className='grid grid-cols-3 py-3'>
-							<h4 className='text-left'>Fail: {fail}</h4>
-							<h4 className='text-center'>Total Fail: {questions[current] ? questions[current].failCount : 0}</h4>
-							<h4 className='text-right'>{current} / {totalCount}</h4>
-						</div>
-						{/* 문제 입/출력창 */}
-						<div className='text-xl select-none'>
-							<h3 className='p-3 w-full'>{questions[current]?.kr}</h3>
-							{showHint && <h3 className='p-3 w-full mb-3'>
-								{questions[current]?.en.split('').map((w, i) => (
-									<span
-										key={i}
-										className={showHint ? (watch('answer') && watch('answer')[i] === w ? 'text-gray-900' : 'text-red-500 underline') : ''}
-									>{w}</span>
-								))}
-							</h3>}
-							<textarea
-								className='input w-full text-xl'
-								placeholder={isFinish || questions.length === 0 ? 'No question' : 'Enter the answer'}
-								{...register('answer', { required: true })}
-								disabled={isFinish || questions.length === 0}
-								style={{ resize: 'none' }}
-							/>
-						</div>
+						{!isFinish && (
+							<>
+								{/* 상황판 */}
+								<div className='grid grid-cols-3 py-3'>
+									<h4 className='text-left'>Fail: {fail}</h4>
+									<h4 className='text-center'>Total Fail: {questions[current] ? questions[current].failCount : 0}</h4>
+									<h4 className='text-right'>{current} / {totalCount}</h4>
+								</div>
+								{/* 문제 입/출력창 */}
+								<div className='text-xl select-none'>
+									{!isFinish && (
+										<div className='p-3 flex justify-between items-center'>
+											<h3>{questions[current]?.kr}</h3>
+											{(showHint || markingResult) && <FontAwesomeIcon className='hover:cursor-pointer' icon={faVolumeHigh} onClick={onClickSpeech} />}
+										</div>
+									)}
+									{showHint && (
+										<h3 className='p-3 w-full mb-3'>
+											{questions[current]?.en.split('').map((w, i) => {
+												let className = '';
+												if (showHint && watch('answer')) {
+													const answer = watch('answer')[i]?.toLowerCase();
+													className = answer === w.toLowerCase() ? 'text-gray-900' : 'text-red-500 underline';
+												}
+												return (
+													<span key={i} className={className}>{w}</span>
+												);
+											})}
+										</h3>
+									)}
+									<input
+										className='input w-full text-xl'
+										placeholder={questions.length === 0 ? 'No question' : 'Enter the answer'}
+										{...register('answer', { required: true })}
+										disabled={questions.length === 0}
+									/>
+								</div>
+							</>
+						)}
 						<div className='p-3 text-center text-lg font-semibold'>
 							{markingResult !== null && (
 								markingResult
 									? <span className='text-green-500'>Correct answer.</span>
 									: <span className='text-red-500'>Wrong answer.</span>
 							)}
-							{isFinish && <span className='text-green-500'>All questions solved!</span>}
+							{isFinish && (
+								<div>
+									<span className='text-green-500'>All questions solved!</span>
+									{failQuestions.length > 0 &&
+										<h3 className='text-red-500'>{`${failQuestions.length} fail questions.`}</h3>
+									}
+								</div>
+							)}
 						</div>
+						{isFinish && failQuestions.length > 0 &&
+							<button type='button' className={`btn-gray w-full mb-5`} onClick={onClickInitRestryFailQuestions}>Retry Fail Questions</button>
+						}
 						{/* 버튼 */}
 						<div className='flex justify-between'>
 							<button type='button' className={`btn-gray w-1/3 mr-3 ${questions.length === 0 && 'btn-disable'}`} onClick={onClickReset}>Reset</button>
@@ -196,7 +240,8 @@ export const Questions = () => {
 						</div>
 					</form>
 				</div>
-			)}
+			)
+			}
 		</>
 	);
 }
