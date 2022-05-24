@@ -5,6 +5,10 @@ import { useHistory } from 'react-router-dom';
 import { Button } from '../component/button';
 import { ADD_QUESTION_MUTATION } from '../graphql/mutations';
 import { AddQuestionMutation, AddQuestionMutationVariables } from '../__generated__/AddQuestionMutation';
+// @ts-ignore
+import { useSpeechSynthesis } from 'react-speech-kit';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faVolumeHigh } from '@fortawesome/free-solid-svg-icons';
 
 interface IFormProps {
 	kr: string;
@@ -45,6 +49,18 @@ export const AddQuestion = () => {
 			}
 		});
 	};
+	const { speak, voices } = useSpeechSynthesis();
+	const onClickSpeech = () => {
+		const { en: text } = getValues();
+		if (text !== '') {
+			const voice = voices.find((v: any) => v.lang === 'en-US');
+			speak({
+				text, voice,
+				rate: 0.9,
+				pitch: 1
+			});
+		}
+	};
 
 	return (
 		<div className='container flex flex-col items-center mt-10 md:mt-52'>
@@ -57,13 +73,16 @@ export const AddQuestion = () => {
 					})}
 					placeholder='Korean'
 				/>
-				<input
-					className='input'
-					{...register('en', {
-						required: true,
-					})}
-					placeholder='English'
-				/>
+				<div className='relative'>
+					<input
+						className='input w-full'
+						{...register('en', {
+							required: true,
+						})}
+						placeholder='English'
+					/>
+					<FontAwesomeIcon className='absolute hover:cursor-pointer' icon={faVolumeHigh} onClick={onClickSpeech} style={{top: '18px', right: '15px'}}/>
+				</div>
 				<Button type='submit' canClick={isValid} actionText={'Save'} />
 			</form>
 			<p className='mt-5 text-lime-600 hover:underline cursor-pointer' onClick={() => history.goBack()}>Go back &larr;</p>

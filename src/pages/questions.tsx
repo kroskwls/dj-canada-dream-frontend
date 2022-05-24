@@ -195,10 +195,14 @@ export const Questions = () => {
 									{showHint && (
 										<h3 className='p-3 w-full mb-3'>
 											{questions[current]?.en.split('').map((w, i) => {
-												let className = '';
-												if (showHint && watch('answer')) {
-													const answer = watch('answer')[i]?.toLowerCase();
-													className = answer === w.toLowerCase() ? 'text-gray-900' : 'text-red-500 underline';
+												if (!showHint) {
+													return null;
+												}
+
+												let className = 'text-red-500 underline';
+												const answer = watch('answer') ? watch('answer')[i]?.toLowerCase() : '*';
+												if (answer === w.toLowerCase()) {
+													className = 'text-gray-900';
 												}
 												return (
 													<span key={i} className={className}>{w}</span>
