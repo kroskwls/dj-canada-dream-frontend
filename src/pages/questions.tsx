@@ -52,7 +52,7 @@ export const Questions = () => {
 			// worst list
 			const highFailueRateList = data.allQuestions.questions.sort((a, b) => {
 				return b.failCount - a.failCount;
-			}).slice(0, 10);
+			}).slice(0, 20);
 			setHighFailureQuestions(highFailueRateList);
 		}
 	}, [data]);
@@ -258,7 +258,7 @@ export const Questions = () => {
 						</div>
 						<div className='px-10'>
 							<div className='flex justify-between'>
-								<h1 className='text-3xl font-semibold'>Failure Rate TOP 10</h1>
+								<h1 className='text-3xl font-semibold'>Failure Rate TOP 20</h1>
 								<button type='button' className='btn-gray px-5' onClick={onClickHighFailureList}>Try To Solve</button>
 							</div>
 							<div className='py-5'>
