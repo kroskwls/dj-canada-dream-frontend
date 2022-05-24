@@ -77,8 +77,8 @@ export const Questions = () => {
 	const onMarking = () => {
 		const { en: correctAnswer } = questions[current];
 		const { answer: inputAnswer } = getValues();
-		const input = inputAnswer.toLowerCase().replace(/[.]/g, '');
-		const answer = correctAnswer.toLowerCase().replace(/[.]/g, '');
+		const input = inputAnswer.toLowerCase().replace(/[.]/g, '').replace(/[?]/g, '').replace(/[!]/g, '');
+		const answer = correctAnswer.toLowerCase().replace(/[.]/g, '').replace(/[?]/g, '').replace(/[!]/g, '');
 		if (input === answer) {
 			// 정답
 			onClickSpeech();
