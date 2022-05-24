@@ -159,9 +159,8 @@ export const Questions = () => {
 			pitch: 1
 		});
 	};
-	const onClickHighFailureList = (index: number) => {
-		const question = highFailureQuestions[index];
-		init([question]);
+	const onClickHighFailureList = () => {
+		init(highFailureQuestions);
 	};
 
 	return (
@@ -258,19 +257,16 @@ export const Questions = () => {
 							</form>
 						</div>
 						<div className='px-10'>
-							<h1 className='text-3xl font-semibold'>Failure Rate TOP 10</h1>
+							<div className='flex justify-between'>
+								<h1 className='text-3xl font-semibold'>Failure Rate TOP 10</h1>
+								<button type='button' className='btn-gray px-5' onClick={onClickHighFailureList}>Try To Solve</button>
+							</div>
 							<div className='py-5'>
 								{highFailureQuestions.length > 0 && (
 									highFailureQuestions.map((q, i) => (
 										<div key={i} className='flex justify-between'>
-											<div
-												className='mb-3 hover:cursor-pointer hover:underline'
-												title='Try to solve'
-												onClick={() => onClickHighFailureList(i)}
-											>
-												{i + 1}. {q.kr}
-											</div>
-											<div>fail : {q.failCount}</div>
+											<div className='mb-3'>{`${i + 1}. ${q.kr}`}</div>
+											<div>Fail : {q.failCount}</div>
 										</div>
 									))
 								)}
