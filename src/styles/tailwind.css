@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .container {
-	@apply max-w-screen-sm mx-auto p-5;
+	@apply max-w-screen-xl mx-auto p-5;
 }
 
 .btn-lime {
