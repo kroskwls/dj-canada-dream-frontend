@@ -162,6 +162,11 @@ export const Questions = () => {
 	const onClickHighFailureList = () => {
 		init(highFailureQuestions);
 	};
+	const onKeyDownInputSpeech = (e: any) => {
+		if (markingResult && e.ctrlKey === true && e.key === 'Enter') {
+			onClickSpeech();
+		}
+	};
 
 	return (
 		<>
@@ -226,6 +231,7 @@ export const Questions = () => {
 												placeholder={questions.length === 0 ? 'No question' : 'Enter the answer'}
 												{...register('answer', { required: true })}
 												disabled={questions.length === 0}
+												onKeyDown={onKeyDownInputSpeech}
 											/>
 										</div>
 									</>
@@ -264,7 +270,7 @@ export const Questions = () => {
 							<div className='py-5'>
 								{highFailureQuestions.length > 0 && (
 									highFailureQuestions.map((q, i) => (
-										<div key={i} className='flex justify-between'>
+										<div key={i} className='flex justify-between text-base'>
 											<div className='mb-3'>{`${i + 1}. ${q.kr}`}</div>
 											<div>Fail : {q.failCount}</div>
 										</div>
