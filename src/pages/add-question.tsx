@@ -61,6 +61,11 @@ export const AddQuestion = () => {
 			});
 		}
 	};
+	const onKeyDownInputSpeech = (e: any) => {
+		if (e.ctrlKey === true && e.key === 'Enter') {
+			onClickSpeech();
+		}
+	};
 
 	return (
 		<div className='container flex flex-col items-center mt-10 md:mt-52'>
@@ -80,6 +85,7 @@ export const AddQuestion = () => {
 							required: true,
 						})}
 						placeholder='English'
+						onKeyDown={onKeyDownInputSpeech}
 					/>
 					<FontAwesomeIcon className='absolute hover:cursor-pointer' icon={faVolumeHigh} onClick={onClickSpeech} style={{top: '18px', right: '15px'}}/>
 				</div>
