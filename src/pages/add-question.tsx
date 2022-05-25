@@ -41,7 +41,8 @@ export const AddQuestion = () => {
 			console.log('로딩중');
 			return;
 		}
-
+		
+		onClickSpeech();
 		const { kr, en } = getValues();
 		addQuestionMutation({
 			variables: {
