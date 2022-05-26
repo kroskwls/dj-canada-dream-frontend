@@ -104,7 +104,7 @@ export const Questions = () => {
 			setIsFinish(true);
 		}
 		// fail count save
-		questions[current].failCount += (fail === 0 ? -1 : fail);
+		questions[current].failCount += (fail === 0 ? -1 : (fail - 1));
 		if (questions[current].failCount >= 0) {
 			editQuestionMutation({
 				variables: {
